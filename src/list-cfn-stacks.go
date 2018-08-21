@@ -10,16 +10,42 @@ import (
 )
 
 type SlackMessage struct {
+	Text         string       `json:"text"`
+	ResponseType string       `json:"response_type"`
+	Attachments  []Attachment `json:"attachments"`
+}
+
+type Attachment struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
 }
 
 func buildMessage(description *cloudformation.DescribeStacksOutput) (SlackMessage, error) {
-	var slackMessage SlackMessage
-	return slackMessage, nil
+	attachments := make([]Attachment, len(description.Stacks))
+	for _, stack := range *description.Stacks {
+		// Nested stacks are not added to message
+		if stack.ParentId != nil || stack.RootId != nil {
+			continue
+		}
+
+		attachments = append(attachments, Attachment{
+			Title: *stack.StackName,
+			Text:  *stack.Description,
+		})
+	}
+
+	message := SlackMessage{
+		Text:         "List of stacks",
+		ResponseType: "ephemeral",
+		Attachments:  attachments,
+	}
+
+	return message, nil
 }
 
 func HandleRequest() (events.APIGatewayProxyResponse, error) {
 	client := cloudformation.New(
-		session.New(aws.NewConfig().WithRegion("ap-northeast")), nil,
+		session.New(aws.NewConfig().WithRegion("ap-northeast-1")), nil,
 	)
 
 	description, err := client.DescribeStacks(nil)
