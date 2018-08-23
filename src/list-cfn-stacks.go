@@ -17,7 +17,6 @@ type SlackMessage struct {
 
 type Attachment struct {
 	Title string `json:"title"`
-	Text  string `json:"text"`
 }
 
 func buildMessage(description cloudformation.DescribeStacksOutput) (SlackMessage, error) {
@@ -30,7 +29,6 @@ func buildMessage(description cloudformation.DescribeStacksOutput) (SlackMessage
 
 		attachments = append(attachments, Attachment{
 			Title: *stack.StackName,
-			Text:  *stack.Description,
 		})
 	}
 
