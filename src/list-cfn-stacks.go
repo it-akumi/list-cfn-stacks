@@ -21,9 +21,11 @@ type Attachment struct {
 
 func buildMessage(description cloudformation.DescribeStacksOutput) (SlackMessage, error) {
 	attachments := make([]Attachment, len(description.Stacks))
+	nestedStackCount := 0
 	for _, stack := range description.Stacks {
 		// Nested stacks are not added to message
 		if stack.ParentId != nil || stack.RootId != nil {
+			nestedStackCount++
 			continue
 		}
 
@@ -35,7 +37,7 @@ func buildMessage(description cloudformation.DescribeStacksOutput) (SlackMessage
 	message := SlackMessage{
 		Text:         "List of stacks",
 		ResponseType: "ephemeral",
-		Attachments:  attachments,
+		Attachments:  attachments[nestedStackCount:], // Omit empty elements
 	}
 
 	return message, nil
