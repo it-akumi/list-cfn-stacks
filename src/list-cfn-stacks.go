@@ -20,9 +20,9 @@ type Attachment struct {
 	Text  string `json:"text"`
 }
 
-func buildMessage(description *cloudformation.DescribeStacksOutput) (SlackMessage, error) {
+func buildMessage(description cloudformation.DescribeStacksOutput) (SlackMessage, error) {
 	attachments := make([]Attachment, len(description.Stacks))
-	for _, stack := range *description.Stacks {
+	for _, stack := range description.Stacks {
 		// Nested stacks are not added to message
 		if stack.ParentId != nil || stack.RootId != nil {
 			continue
@@ -55,7 +55,7 @@ func HandleRequest() (events.APIGatewayProxyResponse, error) {
 		}, err
 	}
 
-	slackMessage, err := buildMessage(description)
+	slackMessage, err := buildMessage(*description)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: 500, Body: "Failed to build slack message",
