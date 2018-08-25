@@ -21,6 +21,8 @@ in your slack channel, this function shows stack lists.
 
 You must set Role, ARN of an IAM role to use as this function's execution role, in template.yml.
 
+If you comment out this property, a default role is created for this function.
+
 ### Install dependencies and Build
 
 ```
