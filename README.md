@@ -17,12 +17,6 @@ in your slack channel, this function shows stack lists.
 
 ## How to deploy
 
-### Set a property in template.yml
-
-You must set Role, ARN of an IAM role to use as this function's execution role, in template.yml.
-
-If you comment out this property, a default role is created for this function.
-
 ### Install dependencies and Build
 
 ```
@@ -42,6 +36,7 @@ $ sam package \
 $ sam deploy \
      --template-file your-output-template.yml \
      --stack-name your-stack-name
+     --capabilities CAPABILITY_IAM
 ```
 
 You can use `aws cloudformation` instead of `sam`.
